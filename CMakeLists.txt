@@ -33,6 +33,12 @@ set(PRG_DIR ./programs/)
 set(LZ4_SRCS_LIB ${LZ4_DIR}lz4.c ${LZ4_DIR}lz4hc.c ${LZ4_DIR}lz4.h ${LZ4_DIR}lz4hc.h ${LZ4_DIR}lz4frame.c ${LZ4_DIR}lz4frame.h ${LZ4_DIR}xxhash.c)
 set(LZ4_SRCS ${LZ4_DIR}lz4frame.c ${LZ4_DIR}xxhash.c ${PRG_DIR}bench.c ${PRG_DIR}lz4cli.c ${PRG_DIR}lz4io.c)
 
+set (LZ4_PUBLIC_H
+  ${CMAKE_CURRENT_SOURCE_DIR}/lib/lz4.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/lib/lz4hc.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/lib/lz4frame.h
+)
+
 if(BUILD_TOOLS AND NOT BUILD_LIBS)
     set(LZ4_SRCS ${LZ4_SRCS} ${LZ4_SRCS_LIB})
 endif()
@@ -48,20 +54,15 @@ if(BUILD_LIBS)
     set_target_properties(liblz4 PROPERTIES
     OUTPUT_NAME lz4
     SOVERSION "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}"
+	PUBLIC_HEADER "${LZ4_PUBLIC_H}"
     )
-        
+	
     install(TARGETS liblz4
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib
+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     )
-
-    install(FILES
-    ${LZ4_DIR}/lz4.h
-    ${LZ4_DIR}/lz4hc.h
-    ${LZ4_DIR}/lz4frame.h
-    DESTINATION include
-    )
-    
+  
     if(BUILD_TOOLS)
         target_link_libraries(lz4 liblz4)
     endif()
